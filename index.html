@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Pipal Curse Run - A supernatural Indian folklore horror-fantasy endless runner. Escape the cursed forest as the Munjya spirit!" />
+  <meta name="theme-color" content="#0a0f0a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Pipal Curse Run — Escape the Haunted Forest</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="stylesheet" href="css/economy.css?v=2" />
+</head>
+<body>
+
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-tree"></div>
+      <h1 class="loading-title">PIPAL CURSE RUN</h1>
+      <div class="loading-bar-container">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <p class="loading-text" id="loading-text">Awakening the ancient spirits...</p>
+      <div class="fireflies-container" id="loading-fireflies"></div>
+    </div>
+  </div>
+
+  <!-- MAIN GAME CANVAS -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- UI OVERLAY LAYER -->
+  <div id="ui-overlay">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- MAIN MENU — Cinematic Pipal Tree Scene                     -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="main-menu" class="screen hidden">
+
+      <!-- Full-screen Pipal tree canvas (rendered behind UI) -->
+      <canvas id="menu-canvas" class="menu-canvas-bg"></canvas>
+
+      <!-- Ambient wind veil overlay -->
+      <div class="menu-wind-veil"></div>
+
+      <!-- UI floating layer -->
+      <div class="menu-ui">
+
+        <!-- ── Seasonal Event Banner ── -->
+        <div class="menu-event-banner hidden" id="menu-event-banner">
+          <span class="event-pulse-dot"></span>
+          <span id="event-banner-text">Event Active!</span>
+        </div>
+
+        <!-- ── Top bar: currencies + best score ── -->
+        <div class="menu-top-bar">
+          <div class="menu-currencies">
+            <div class="currency-chip">
+              <span class="currency-icon-c">🪙</span>
+              <span class="currency-amount" id="menu-coins-display">0</span>
+            </div>
+            <div class="currency-chip leaf-chip">
+              <span class="currency-icon-c">🍃</span>
+              <span class="currency-amount" id="menu-leaves-display">0</span>
+            </div>
+            <div class="currency-chip gem-chip">
+              <span class="currency-icon-c">💎</span>
+              <span class="currency-amount" id="menu-gems-display">0</span>
+            </div>
+            <div class="currency-chip relic-chip">
+              <span class="currency-icon-c">🏺</span>
+              <span class="currency-amount" id="menu-relics-display">0</span>
+            </div>
+          </div>
+          <div class="menu-top-right">
+            <div class="menu-best-chip">
+              <span class="best-label-sm">BEST</span>
+              <span class="best-val-sm" id="menu-best-score">0</span>
+              <span class="best-unit-sm">m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Logo ── -->
+        <div class="menu-logo-wrap">
+          <div class="logo-rune-row">
+            <span class="logo-rune left-rune">☽</span>
+            <div class="logo-tree-icon">🌳</div>
+            <span class="logo-rune right-rune">☾</span>
+          </div>
+          <h1 class="menu-title-text">PIPAL CURSE RUN</h1>
+          <p class="menu-tagline">Escape the Haunted Forest</p>
+          <div class="title-underline">
+            <div class="underline-glow"></div>
+          </div>
+        </div>
+
+        <!-- ── Character Showcase ── -->
+        <div class="menu-character-area">
+          <div class="char-carousel-wrap">
+            <button class="char-arrow char-arrow-left" id="btn-char-prev" aria-label="Previous character">◀</button>
+            <div class="char-canvas-wrap">
+              <canvas id="menu-char-canvas" width="140" height="200"></canvas>
+              <div class="char-glow-ring"></div>
+              <div class="char-shadow-pool"></div>
+              <div class="char-rune-circle"></div>
+            </div>
+            <button class="char-arrow char-arrow-right" id="btn-char-next" aria-label="Next character">▶</button>
+          </div>
+          <div class="char-details">
+            <div class="char-name-tag">MUNJYA SPIRIT</div>
+            <div class="char-stars">⭐⭐⭐</div>
+            <div class="char-xp-bar">
+              <div class="char-xp-fill" style="width: 65%"></div>
+              <span class="char-xp-label">LVL 1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Play Button + Daily Reward ── -->
+        <div class="menu-play-section">
+          <button class="btn-play-cinematic" id="btn-play" aria-label="Start game">
+            <div class="play-pulse-ring r1"></div>
+            <div class="play-pulse-ring r2"></div>
+            <div class="play-pulse-ring r3"></div>
+            <div class="play-btn-face">
+              <span class="play-btn-icon">▶</span>
+              <span class="play-btn-label">PLAY</span>
+            </div>
+          </button>
+
+          <div class="daily-reward-bubble" id="daily-reward-badge">
+            <div class="daily-spin-glow"></div>
+            <span class="daily-icon">🎁</span>
+            <span class="daily-text">Daily Reward!</span>
+          </div>
+        </div>
+
+        <!-- ── Icon Button Grid ── -->
+        <div class="menu-icon-grid">
+          <button class="menu-icon-btn" id="btn-characters" aria-label="Character selection">
+            <div class="icon-btn-face">
+              <span class="icon-emoji">👤</span>
+            </div>
+            <span class="icon-btn-label">Characters</span>
+            <div class="icon-badge-new">3</div>
+          </button>
+
+          <button class="menu-icon-btn" id="btn-menu-missions" aria-label="Missions & Achievements">
+            <div class="icon-btn-face">
+              <span class="icon-emoji">🎯</span>
+            </div>
+            <span class="icon-btn-label">Missions</span>
+          </button>
+
+          <button class="menu-icon-btn" id="btn-menu-events" aria-label="Seasonal Events">
+            <div class="icon-btn-face">
+              <span class="icon-emoji">🔮</span>
+            </div>
+            <span class="icon-btn-label">Events</span>
+          </button>
+
+          <button class="menu-icon-btn" id="btn-shop" aria-label="Shop">
+            <div class="icon-btn-face">
+              <span class="icon-emoji">🛒</span>
+            </div>
+            <span class="icon-btn-label">Shop</span>
+          </button>
+
+          <button class="menu-icon-btn daily-btn" id="btn-daily" aria-label="Daily rewards">
+            <div class="icon-btn-face">
+              <span class="icon-emoji">🎁</span>
+              <div class="daily-ring-anim"></div>
+            </div>
+            <span class="icon-btn-label">Daily</span>
+            <div class="icon-badge-new pulse-badge">!</div>
+          </button>
+
+          <button class="menu-icon-btn" id="btn-leaderboard" aria-label="Leaderboard">
+            <div class="icon-btn-face">
+              <span class="icon-emoji">🏆</span>
+            </div>
+            <span class="icon-btn-label">Scores</span>
+          </button>
+
+          <button class="menu-icon-btn" id="btn-settings" aria-label="Settings">
+            <div class="icon-btn-face">
+              <span class="icon-emoji">⚙</span>
+            </div>
+            <span class="icon-btn-label">Settings</span>
+          </button>
+        </div>
+
+        <!-- ── Multiplayer Coming Soon Banner ── -->
+        <div class="mp-banner-wrap" id="mp-banner">
+          <div class="mp-banner-inner">
+            <div class="mp-banner-pulse-dot"></div>
+            <div class="mp-ticker-track">
+              <div class="mp-ticker">
+                <span class="mp-lightning">⚡</span>
+                <span class="mp-banner-text">MULTIPLAYER MODE</span>
+                <span class="mp-coming-soon-tag">COMING SOON</span>
+                <span class="mp-lightning">⚡</span>
+                <span class="mp-banner-text">CHALLENGE FRIENDS GLOBALLY</span>
+                <span class="mp-coming-soon-tag">COMING SOON</span>
+                <span class="mp-lightning">⚡</span>
+                <span class="mp-banner-text">MULTIPLAYER MODE</span>
+                <span class="mp-coming-soon-tag">COMING SOON</span>
+                <span class="mp-lightning">⚡</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /menu-ui -->
+    </div><!-- /main-menu -->
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- HUD (In-Game)                                              -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="hud" class="hidden">
+      <div class="hud-top">
+        <div class="hud-score-block">
+          <div class="hud-distance" id="hud-distance">0<span class="unit">m</span></div>
+          <div class="hud-best" id="hud-best-label">BEST: <span id="hud-best-val">0</span>m</div>
+        </div>
+        <div class="hud-center">
+          <div class="power-up-display" id="power-up-display">
+            <div class="power-up-icon" id="pu-icon"></div>
+            <div class="power-up-bar-wrap">
+              <div class="power-up-bar" id="pu-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="hud-right">
+          <div class="hud-coins">
+            <span class="coin-icon">🪙</span>
+            <span id="hud-coins">0</span>
+          </div>
+          <button class="btn-pause" id="btn-pause" aria-label="Pause">⏸</button>
+        </div>
+      </div>
+      <div class="multiplier-display" id="multiplier-display">
+        <span id="multiplier-val">×1</span>
+      </div>
+
+      <!-- Combo Counter HUD -->
+      <div id="combo-overlay" class="combo-overlay hidden">
+        <div class="combo-badge-glow"></div>
+        <div class="combo-title-row">
+          <span class="combo-fire-icon">🔥</span>
+          <span id="combo-count">2x</span>
+        </div>
+        <div id="combo-multiplier">COMBO MULTIPLIER: 1.5x</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- PAUSE SCREEN                                               -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="pause-screen" class="screen hidden">
+      <div class="pause-backdrop"></div>
+      <div class="pause-panel">
+        <h2 class="pause-title">PAUSED</h2>
+        <div class="pause-stats">
+          <div class="stat-row"><span>Distance</span><span id="pause-dist">0m</span></div>
+          <div class="stat-row"><span>Coins</span><span id="pause-coins">0</span></div>
+        </div>
+        <div class="pause-buttons">
+          <button class="btn-primary" id="btn-resume">▶ RESUME</button>
+          <button class="btn-secondary" id="btn-restart-pause">↺ RESTART</button>
+          <button class="btn-secondary" id="btn-quit-pause">✕ QUIT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- GAME OVER SCREEN                                           -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="game-over-screen" class="screen hidden">
+      <div class="go-backdrop"></div>
+      <div class="go-content">
+        <div class="go-skull">💀</div>
+        <h2 class="go-title">CURSED!</h2>
+        <p class="go-subtitle">The Forest Guardian has claimed your soul</p>
+        <div class="go-stats">
+          <div class="go-stat-main">
+            <div class="go-stat-label">DISTANCE</div>
+            <div class="go-stat-value" id="go-distance">0<span class="unit">m</span></div>
+          </div>
+          <div class="go-stat-row">
+            <div class="go-stat-item">
+              <div class="go-stat-label">COINS</div>
+              <div class="go-stat-value" id="go-coins">0</div>
+            </div>
+            <div class="go-stat-item">
+              <div class="go-stat-label">BEST</div>
+              <div class="go-stat-value" id="go-best">0<span class="unit">m</span></div>
+            </div>
+          </div>
+          <div class="go-new-best" id="go-new-best">🏆 NEW RECORD!</div>
+        </div>
+        <div class="go-buttons">
+          <button class="btn-primary" id="btn-play-again">▶ RUN AGAIN</button>
+          <button class="btn-secondary" id="btn-share-score">📲 SHARE SCORE</button>
+          <button class="btn-secondary" id="btn-go-menu">⌂ MAIN MENU</button>
+        </div>
+        <div class="go-score-breakdown" id="go-breakdown"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- LEADERBOARD SCREEN                                         -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="leaderboard-screen" class="screen hidden">
+      <div class="overlay-backdrop"></div>
+      <div class="overlay-panel">
+        <h2 class="panel-title">🏆 HIGH SCORES</h2>
+        <div id="leaderboard-list" class="leaderboard-list"></div>
+        <button class="btn-secondary" id="btn-close-lb">✕ CLOSE</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- SETTINGS SCREEN                                            -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="settings-screen" class="screen hidden">
+      <div class="overlay-backdrop"></div>
+      <div class="overlay-panel">
+        <h2 class="panel-title">⚙ SETTINGS</h2>
+        <div class="settings-list">
+          <div class="setting-row">
+            <label>Sound FX</label>
+            <button class="toggle-btn" id="toggle-sfx" data-on="true">ON</button>
+          </div>
+          <div class="setting-row">
+            <label>Music</label>
+            <button class="toggle-btn" id="toggle-music" data-on="true">ON</button>
+          </div>
+          <div class="setting-row">
+            <label>Particles</label>
+            <button class="toggle-btn" id="toggle-particles" data-on="true">HIGH</button>
+          </div>
+          <div class="setting-row">
+            <label>Screen Shake</label>
+            <button class="toggle-btn" id="toggle-shake" data-on="true">ON</button>
+          </div>
+        </div>
+        <button class="btn-secondary" id="btn-close-settings">✕ CLOSE</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- CHARACTER SELECTION SCREEN                                -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="char-select-screen" class="screen hidden">
+      <!-- Canvas shrine background -->
+      <canvas id="char-select-canvas" class="cs-canvas-bg"></canvas>
+
+      <!-- Wind veil overlay -->
+      <div class="menu-wind-veil"></div>
+
+      <!-- Top bar -->
+      <div class="cs-top-bar">
+        <button class="cs-back-btn" id="cs-btn-back" aria-label="Back to menu">‹ BACK</button>
+        <div class="cs-top-title">CHARACTER SELECT</div>
+        <div class="cs-currency-row">
+          <span class="cs-currency-item">🪙 <span id="cs-coins-display">0</span></span>
+          <span class="cs-currency-item cs-gems">💎 <span id="cs-gems-display">0</span></span>
+        </div>
+      </div>
+
+      <!-- Character info panel (bottom) -->
+      <div class="cs-info-panel">
+        <!-- Rarity badge -->
+        <div class="cs-rarity-badge" id="cs-char-rarity">LEGENDARY</div>
+
+        <!-- Name & title -->
+        <div class="cs-name-block">
+          <div class="cs-char-name" id="cs-char-name">MUNJYA SPIRIT</div>
+          <div class="cs-char-title" id="cs-char-title">The Cursed One</div>
+        </div>
+
+        <!-- Star rating -->
+        <div class="cs-stars" id="cs-char-stars"></div>
+
+        <!-- Description -->
+        <p class="cs-desc" id="cs-char-desc">A mischievous spirit who stole the sacred artifact.</p>
+
+        <!-- Special ability -->
+        <div class="cs-special" id="cs-char-special">⚡ Ghost Dash — Phase through obstacles</div>
+
+        <!-- Costume selector -->
+        <div class="cs-costume-row">
+          <button class="cs-costume-arrow" id="cs-costume-prev" aria-label="Previous costume">◀</button>
+          <div class="cs-costume-label">
+            <span class="cs-costume-prefix">SKIN:</span>
+            <span id="cs-costume-name">Default</span>
+          </div>
+          <button class="cs-costume-arrow" id="cs-costume-next" aria-label="Next costume">▶</button>
+        </div>
+
+        <!-- Select button -->
+        <button class="cs-select-btn unlocked" id="cs-select-btn">▶ SELECT</button>
+      </div>
+
+      <!-- Left / Right nav arrows -->
+      <button class="cs-nav-arrow cs-nav-left"  id="cs-btn-prev" aria-label="Previous character">‹</button>
+      <button class="cs-nav-arrow cs-nav-right" id="cs-btn-next" aria-label="Next character">›</button>
+
+      <!-- Navigation dots -->
+      <div class="cs-nav-dots" id="cs-nav-dots"></div>
+    </div><!-- /char-select-screen -->
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- SHOP SCREEN                                                -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="shop-screen" class="economy-panel">
+      <div class="econ-header">
+        <h2 class="econ-title">🏺 ANCIENT SHRINE SHOP</h2>
+        <button class="econ-close-btn" id="shop-close-btn">✕ CLOSE</button>
+      </div>
+
+      <!-- Currency bar -->
+      <div class="econ-wallet-bar">
+        <div class="wallet-item"><span>🪙</span><span id="shop-wallet-coins">0</span></div>
+        <div class="wallet-item"><span>🍃</span><span id="shop-wallet-leaves">0</span></div>
+        <div class="wallet-item"><span>💎</span><span id="shop-wallet-crystals">0</span></div>
+        <div class="wallet-item"><span>🏺</span><span id="shop-wallet-relics">0</span></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="shop-tabs">
+        <button class="shop-tab active" id="tab-upgrades">🛡️ UPGRADES</button>
+        <button class="shop-tab" id="tab-boats">🛹 BOATS</button>
+        <button class="shop-tab" id="tab-costumes">🎭 COSTUMES</button>
+        <button class="shop-tab" id="tab-chests">📦 CHESTS</button>
+      </div>
+
+      <!-- Tab Content scroll area -->
+      <div class="shop-content" id="shop-tab-content">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- DAILY LOGIN REWARDS SCREEN                                 -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="daily-rewards-screen" class="economy-panel">
+      <div class="econ-header">
+        <h2 class="econ-title">🎁 DAILY SPIRIT BLESSING</h2>
+        <button class="econ-close-btn" id="daily-close-btn">✕ CLOSE</button>
+      </div>
+
+      <div class="daily-grid" id="daily-grid-container">
+        <!-- Dynamically populated -->
+      </div>
+
+      <div class="daily-claim-section">
+        <button class="btn-claim-reward" id="btn-claim-daily" disabled>CLAIM REWARD</button>
+        <div class="daily-timer" id="daily-timer-text">Next reward in --:--:--</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- CHEST OPENING CINEMATIC OVERLAY                            -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="chest-open-overlay" class="chest-overlay">
+      <div class="chest-render-zone">
+        <div class="chest-light-shafts" id="chest-glow"></div>
+        <div class="chest-model" id="chest-graphic">📦</div>
+      </div>
+
+      <!-- Reward Card Reveal -->
+      <div class="reward-reveal-card" id="reward-reveal-card">
+        <div class="reward-card-glow" id="reward-icon">🪙</div>
+        <h3 class="reward-card-title" id="reward-title">150 COINS</h3>
+        <p class="reward-card-desc" id="reward-desc">Ancient Cursed Forest Coins</p>
+        <button class="reward-card-claim-btn" id="reward-claim-btn">CLAIM</button>
+      </div>
+    </div>
+
+    <!-- ── Missions & Achievements Panel ── -->
+    <div id="engagement-panel" class="economy-panel hidden">
+      <div class="econ-header">
+        <h2 class="econ-title">🎯 TASKS & ACHIEVEMENTS</h2>
+        <button class="econ-close-btn" id="engage-close-btn">✕ CLOSE</button>
+      </div>
+
+      <div class="shop-tabs">
+        <button class="shop-tab active" id="tab-engage-missions">🎯 DAILY TASKS</button>
+        <button class="shop-tab" id="tab-engage-achievements">🏆 MILESTONES</button>
+      </div>
+
+      <div class="shop-content scrollable" id="engage-tab-content">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- ── Seasonal Events Selector Panel ── -->
+    <div id="events-panel" class="economy-panel hidden">
+      <div class="econ-header">
+        <h2 class="econ-title">🔮 SEASONAL HAUNTED EVENTS</h2>
+        <button class="econ-close-btn" id="events-close-btn">✕ CLOSE</button>
+      </div>
+      
+      <p class="panel-subtitle-text">Tune the forest energy to trigger spooky Indian folklore seasons.</p>
+
+      <div class="shop-content scrollable" id="events-list-container">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- ── Level Up Celebration Overlay ── -->
+    <div id="level-celebration-screen" class="level-celebration hidden">
+      <div class="level-glow-ring"></div>
+      <div class="level-content-card">
+        <div class="level-badge-container">
+          <div class="level-shield-glow"></div>
+          <div class="level-shield-back">✨</div>
+          <div class="level-num-display" id="level-val">2</div>
+        </div>
+        <h2 class="level-title-text" id="level-title">LEVEL UP!</h2>
+        <p class="level-congrats">Your spirit grows stronger...</p>
+        <p class="level-benefit-desc" id="level-benefit">Score multiplier increased to 1.2x!</p>
+        <button class="level-claim-btn" id="level-claim-btn">AWESOME</button>
+      </div>
+    </div>
+
+    <!-- ── Social Sharing Overlay ── -->
+    <div id="share-overlay" class="share-overlay hidden">
+      <div class="share-backdrop"></div>
+      <div class="share-panel">
+        <div class="share-header">
+          <h3>📲 SHARE YOUR RUN</h3>
+          <button id="share-close-btn" class="share-close-btn">✕</button>
+        </div>
+        
+        <!-- Story Mockup Frame -->
+        <div class="share-card-mockup" id="share-card-element">
+          <div class="card-bg-glow"></div>
+          <div class="card-brand">PIPAL CURSE RUN</div>
+          
+          <div class="card-character-badge">
+            <span id="share-card-char">MUNJYA SPIRIT</span>
+            <span class="card-char-lvl" id="share-card-lvl">Level 1</span>
+          </div>
+
+          <div class="card-run-stats">
+            <div class="card-stat">
+              <span class="lbl">DISTANCE</span>
+              <span class="val" id="share-card-dist">1,240m</span>
+            </div>
+            <div class="card-stat">
+              <span class="lbl">COINS</span>
+              <span class="val" id="share-card-coins">350</span>
+            </div>
+            <div class="card-stat">
+              <span class="lbl">GLOBAL RANK</span>
+              <span class="val" id="share-card-rank">#4</span>
+            </div>
+          </div>
+          
+          <div class="card-caption">"I escaped the Forest Guardian! Can you survive?" 👹</div>
+        </div>
+
+        <p class="share-instructions">Share with friends to challenge them!</p>
+        
+        <div class="share-channels">
+          <button class="share-channel-btn" data-channel="WhatsApp">
+            <span class="channel-icon">🟢</span>
+            <span>WhatsApp</span>
+          </button>
+          <button class="share-channel-btn" data-channel="Instagram">
+            <span class="channel-icon">📸</span>
+            <span>Instagram</span>
+          </button>
+          <button class="share-channel-btn" data-channel="Snapchat">
+            <span class="channel-icon">🟡</span>
+            <span>Snapchat</span>
+          </button>
+          <button class="share-channel-btn" data-channel="Twitter/X">
+            <span class="channel-icon">🖤</span>
+            <span>Twitter/X</span>
+          </button>
+        </div>
+        
+        <div id="share-status-msg" class="share-status-msg"></div>
+      </div>
+    </div>
+
+    <!-- COMBO / EVENT NOTIFICATIONS -->
+    <div id="notifications" class="notifications"></div>
+
+  </div><!-- /ui-overlay -->
+
+  <!-- JS Modules (load order matters) -->
+  <script src="js/utils.js?v=4"></script>
+  <script src="js/input.js?v=4"></script>
+  <script src="js/audio.js?v=4"></script>
+  <script src="js/particles.js?v=4"></script>
+  <script src="js/environments.js?v=4"></script>
+  <script src="js/renderer.js?v=4"></script>
+  <script src="js/player.js?v=4"></script>
+  <script src="js/obstacles.js?v=4"></script>
+  <script src="js/collectibles.js?v=4"></script>
+  <script src="js/surfer-boat.js?v=4"></script>
+  <script src="js/powerups.js?v=4"></script>
+  <script src="js/enemies.js?v=4"></script>
+  <script src="js/world.js?v=4"></script>
+  <script src="js/menu.js?v=4"></script>
+  <script src="js/character-select.js?v=4"></script>
+  <script src="js/economy.js?v=4"></script>
+  <script src="js/economy-ui.js?v=4"></script>
+  <script src="js/engagement.js?v=4"></script>
+  <script src="js/engagement-ui.js?v=4"></script>
+  <script src="js/ui.js?v=4"></script>
+  <script src="js/main.js?v=4"></script>
+
+</body>
+</html>
